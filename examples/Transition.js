@@ -84,7 +84,7 @@ class TransitionExample extends React.Component {
           onHide={this.toggle}
         >
           <div className="transition-example-dialog">
-            <h4 id='modal-label'>I'm fading in!</h4>
+            <h4 id='modal-label'>I&quot;m fading in!</h4>
             <p>
               Anim pariatur cliche reprehenderit, enim eiusmod high life
               accusamus terry richardson ad squid.
