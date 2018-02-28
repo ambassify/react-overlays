@@ -10,6 +10,20 @@ import ownerDocument from './utils/ownerDocument';
 
 const displayName = 'Position';
 
+const validPopperPlacements = [
+  // These are inlined from Popper.placements for docgen.
+  'auto-start', 'auto', 'auto-end',
+  'top-start', 'top', 'top-end',
+  'right-start', 'right', 'right-end',
+  'bottom-end', 'bottom', 'bottom-start',
+  'left-end', 'left', 'left-start',
+];
+
+const validPopperFlipBehaviours = validPopperPlacements.concat([
+  false, // disabling flip
+  'flip', 'clockwise', 'counterclockwise'
+]);
+
 const propTypes = {
   /**
    * A node, element, or function that returns either. The child will be
@@ -19,13 +33,13 @@ const propTypes = {
   /**
    * How to position the component relative to the target
    */
-  placement: PropTypes.oneOf([
-    // These are inlined from Popper.placements for docgen.
-    'auto-start', 'auto', 'auto-end',
-    'top-start', 'top', 'top-end',
-    'right-start', 'right', 'right-end',
-    'bottom-end', 'bottom', 'bottom-start',
-    'left-end', 'left', 'left-start',
+  placement: PropTypes.oneOf(validPopperPlacements),
+  /**
+   * How to adjust position of the component when hitting overlap with target
+   */
+  flip: PropTypes.oneOfType([
+    PropTypes.oneOf(validPopperFlipBehaviours),
+    PropTypes.arrayOf(PropTypes.oneOf(validPopperFlipBehaviours)),
   ]),
   /**
    * "offsetParent" of the component
@@ -47,6 +61,7 @@ const propTypes = {
 
 const defaultProps = {
   placement: 'right',
+  flip: false,
   containerPadding: 0,
   shouldUpdatePosition: false,
 };
@@ -190,7 +205,7 @@ class Position extends React.Component {
     }
 
     const {
-      placement, shouldUpdatePosition, container, containerPadding,
+      placement, flip, shouldUpdatePosition, container, containerPadding,
     } = this.props;
     const containerNode = getContainer(container, ownerDocument(this).body);
 
@@ -206,7 +221,8 @@ class Position extends React.Component {
             padding: containerPadding,
           },
           flip: {
-            enabled: placement.indexOf('auto') === 0,
+            enabled: flip !== false,
+            behaviour: flip
           },
           applyStyle: {
             enabled: false,
